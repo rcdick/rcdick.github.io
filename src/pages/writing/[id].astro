@@ -37,6 +37,12 @@ const { Content } = await render(post);
     <div class="content">
       <Content />
     </div>
+
+    <footer class="essay-footer">
+      <a href="/">← Home</a>
+    </footer>
+
+
   </article>
 </BaseLayout>
 
@@ -90,4 +96,19 @@ const { Content } = await render(post);
       top: 36px;
     }
   }
+
+  .essay-footer {
+  margin-top: 64px;
+  padding-top: 24px;
+}
+
+.essay-footer a {
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.essay-footer a:hover {
+  text-decoration: underline;
+}
+
 </style>
