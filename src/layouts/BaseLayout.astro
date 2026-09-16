@@ -1,100 +1,122 @@
 ---
 interface Props {
   title: string;
+  home?: boolean;
 }
 
-const { title } = Astro.props;
+const { title, home = false } = Astro.props;
 ---
 
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content="Writing by Your Name" />
+    <meta
+      name="description"
+      content="Writing by Richard"
+    />
     <title>{title}</title>
 
     <style>
-  :global(*) {
-    box-sizing: border-box;
-  }
+      :global(*) {
+        box-sizing: border-box;
+      }
 
-  :global(html) {
-    scroll-behavior: smooth;
-  }
+      :global(html) {
+        scroll-behavior: smooth;
+      }
 
-  :global(body) {
-    margin: 0;
-    background: #fff;
-    color: #222;
-    font-family: Georgia, "Times New Roman", serif;
-    line-height: 1.75;
-    font-size: 17px;
-  }
+      :global(body) {
+        margin: 0;
+        background: #fff;
+        color: #222;
+        font-family: Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        font-size: 17px;
+      }
 
-  :global(main) {
-    width: min(680px, calc(100% - 40px));
-    margin: 64px auto 100px;
-  }
+      :global(main) {
+        width: min(680px, calc(100% - 40px));
+        margin: 64px auto 100px;
+      }
 
-  :global(nav) {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 72px;
-    font-size: 15px;
-  }
+:global(nav) {
+  display: grid;
+  grid-template-columns: 120px auto;
+  align-items: center;
+  margin-bottom: 72px;
+  font-size: 15px;
+}
 
-  :global(nav a) {
-    color: inherit;
-    text-decoration: none;
-  }
+:global(.nav-left) {
+  text-align: left;
+}
 
-  :global(nav a:hover) {
-    text-decoration: underline;
-  }
+:global(.nav-right) {
+  text-align: left;
+}
 
-  :global(h1) {
-    font-size: 2rem;
-    line-height: 1.2;
-    margin: 0 0 24px;
-  }
+:global(nav a) {
+  color: inherit;
+  text-decoration: none;
+}
 
-  :global(h2) {
-    font-size: 1.25rem;
-    line-height: 1.3;
-    margin: 56px 0 24px;
-  }
+:global(nav a:hover) {
+  text-decoration: underline;
+}
 
-  :global(p) {
-    margin: 0 0 24px;
-  }
+      :global(h1) {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin: 0 0 24px;
+      }
 
-  :global(a) {
-    color: inherit;
-  }
+      :global(h2) {
+        font-size: 1.25rem;
+        line-height: 1.3;
+        margin: 56px 0 24px;
+      }
 
-  @media (max-width: 700px) {
-    :global(main) {
-      width: min(100% - 28px, 680px);
-      margin-top: 36px;
-    }
+      :global(p) {
+        margin: 0 0 24px;
+      }
 
-    :global(nav) {
-      margin-bottom: 52px;
-    }
+      :global(a) {
+        color: inherit;
+      }
 
-    :global(body) {
-      font-size: 16px;
-    }
-  }
-</style>
+      @media (max-width: 700px) {
+        :global(main) {
+          width: min(100% - 28px, 680px);
+          margin-top: 36px;
+        }
+
+        :global(nav) {
+          margin-bottom: 52px;
+        }
+
+        :global(body) {
+          font-size: 16px;
+        }
+      }
+    </style>
   </head>
 
   <body>
     <main>
       <nav>
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-      </nav>
+  <div class="nav-left">
+    {home ? (
+      <a href="/">Richard Carl</a>
+    ) : (
+      <a href="/">← Home</a>
+    )}
+  </div>
+
+  <div class="nav-right">
+    <a href="/about">About</a>
+  </div>
+</nav>
 
       <slot />
     </main>

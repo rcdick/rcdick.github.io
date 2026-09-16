@@ -17,9 +17,6 @@ const { Content } = await render(post);
 
 <BaseLayout title={post.data.title}>
   <article>
-    <p class="back">
-      <a href="/">← Home</a>
-    </p>
 
     <header>
       <h1>{post.data.title}</h1>
@@ -44,18 +41,6 @@ const { Content } = await render(post);
 </BaseLayout>
 
 <style>
-  .back {
-    margin-bottom: 56px;
-    font-size: 15px;
-  }
-
-  .back a {
-    text-decoration: none;
-  }
-
-  .back a:hover {
-    text-decoration: underline;
-  }
 
   header {
     margin-bottom: 48px;
@@ -71,9 +56,10 @@ const { Content } = await render(post);
   }
 
   .description {
-    margin-top: 24px;
+    margin-top: 12px;
     color: #666;
-    font-style: italic;
+    font-size: 14px;
+    font-style: normal;
   }
 
   .content {
@@ -97,5 +83,11 @@ const { Content } = await render(post);
     padding-left: 20px;
     border-left: 2px solid #ccc;
     color: #555;
+  }
+
+  @media (max-width: 700px) {
+    .back {
+      top: 36px;
+    }
   }
 </style>
