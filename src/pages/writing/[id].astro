@@ -1,0 +1,101 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("writing");
+
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={post.data.title}>
+  <article>
+    <p class="back">
+      <a href="/">← Home</a>
+    </p>
+
+    <header>
+      <h1>{post.data.title}</h1>
+
+      <time datetime={post.data.pubDate.toISOString()}>
+        {post.data.pubDate.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })}
+      </time>
+
+      {post.data.description && (
+        <p class="description">{post.data.description}</p>
+      )}
+    </header>
+
+    <div class="content">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .back {
+    margin-bottom: 56px;
+    font-size: 15px;
+  }
+
+  .back a {
+    text-decoration: none;
+  }
+
+  .back a:hover {
+    text-decoration: underline;
+  }
+
+  header {
+    margin-bottom: 48px;
+  }
+
+  header h1 {
+    margin-bottom: 12px;
+  }
+
+  time {
+    color: #777;
+    font-size: 15px;
+  }
+
+  .description {
+    margin-top: 24px;
+    color: #666;
+    font-style: italic;
+  }
+
+  .content {
+    margin-top: 48px;
+  }
+
+  .content :global(p) {
+    margin-bottom: 26px;
+  }
+
+  .content :global(h2) {
+    margin-top: 56px;
+  }
+
+  .content :global(h3) {
+    margin-top: 40px;
+  }
+
+  .content :global(blockquote) {
+    margin: 32px 0;
+    padding-left: 20px;
+    border-left: 2px solid #ccc;
+    color: #555;
+  }
+</style>

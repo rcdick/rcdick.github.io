@@ -1,22 +1,92 @@
 ---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const posts = await getCollection("writing");
+
+posts.sort(
+  (a, b) =>
+    b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Your Name</title>
-  </head>
+<BaseLayout title="Richard Carl">
+  <header>
+    <h1>Richard Carl</h1>
 
-  <body>
-    <main>
-      <h1>Your Name</h1>
+    <p class="intro">
+      Writing about things I'm interested in.
+    </p>
+  </header>
 
-      <p>Writing about things I'm interested in.</p>
+  <section>
+    <h2>Writing</h2>
 
-      <h2>Writing</h2>
+    <div class="posts">
+      {posts.map((post) => (
+        <article class="post">
+          <time datetime={post.data.pubDate.toISOString()}>
+            {post.data.pubDate.toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
+          </time>
 
-	  <p>16 Sep 2026 — <a href="/writing/first-note">A First Note</a></p>
-    </main>
-  </body>
-</html>
+          <a href={`/writing/${post.id}`}>
+            {post.data.title}
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  header {
+    margin-bottom: 16px;
+  }
+
+  .intro {
+    max-width: 520px;
+    color: #666;
+  }
+
+  .posts {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .post {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 28px;
+    align-items: baseline;
+  }
+
+  .post time {
+    color: #777;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post a {
+    text-decoration: none;
+  }
+
+  .post a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .post {
+      display: block;
+    }
+
+    .post time {
+      display: block;
+      margin-bottom: 2px;
+    }
+  }
+</style>
