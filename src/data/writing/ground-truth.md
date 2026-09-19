@@ -1,5 +1,5 @@
 ---
-title: "Ground Truth"
+title: "ground truth"
 description: "Translating between worlds?"
 pubDate: "2026-09-16"
 ---

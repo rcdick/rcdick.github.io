@@ -1,5 +1,5 @@
 ---
-title: "A First Note"
+title: "a first note"
 description: "What is this about, who is this for."
 pubDate: "2026-09-16"
 ---
