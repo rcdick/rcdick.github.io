@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haushaltsspiel 2026 — Der Bundeshaushalt zum Anfassen</title>
+<style>
+  :root{
+    --paper:#ECEAE0;
+    --panel:#F6F4EC;
+    --panel-2:#F0EDE1;
+    --ink:#21251F;
+    --ink-soft:#585C4F;
+    --ink-faint:#8A8D7C;
+    --line:#CBC5AE;
+    --line-soft:#DDD8C4;
+    --brass:#9C7A34;
+    --brass-deep:#7C6127;
+    --forest:#33553F;
+    --forest-bg:#E4EBE1;
+    --rust:#9C3B2E;
+    --rust-bg:#F1E1DA;
+    --serif:'Iowan Old Style','Palatino Linotype','Book Antiqua',Georgia,serif;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--brass-deep);}
+
+  /* ---------- top masthead ---------- */
+  .masthead{
+    padding:28px 32px 18px;
+    border-bottom:2px solid var(--ink);
+    background:var(--paper);
+  }
+  .masthead-inner{
+    max-width:1180px;margin:0 auto;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
+  }
+  .masthead h1{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:32px;
+    margin:0 0 4px;
+    letter-spacing:0.2px;
+  }
+  .masthead p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:14px;
+    max-width:540px;
+  }
+  .masthead-meta{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink-faint);
+    text-align:right;
+    line-height:1.6;
+  }
+
+  /* ---------- sticky summary bar ---------- */
+  .summary-bar{
+    position:sticky;top:0;z-index:50;
+    background:var(--ink);
+    color:var(--paper);
+    border-bottom:2px solid var(--brass);
+  }
+  .summary-inner{
+    max-width:1180px;margin:0 auto;
+    padding:14px 32px;
+    display:flex;gap:36px;align-items:center;flex-wrap:wrap;
+  }
+  .summary-figure{display:flex;flex-direction:column;gap:2px;}
+  .summary-figure .label{font-size:11px;color:#C9C4AE;}
+  .summary-figure .value{font-family:var(--mono);font-size:19px;letter-spacing:0.2px;}
+  .summary-figure .value.pos{color:#9FD3A6;}
+  .summary-figure .value.neg{color:#E6A79B;}
+  .summary-gauge{flex:1;min-width:220px;}
+  .summary-gauge .label{font-size:11px;color:#C9C4AE;margin-bottom:6px;display:flex;justify-content:space-between;}
+  .gauge-track{
+    height:10px;border-radius:2px;background:#3A3F33;overflow:hidden;position:relative;
+  }
+  .gauge-fill{
+    height:100%;background:var(--brass);
+    width:0%;
+    transition:width .35s ease;
+  }
+  .summary-reset{
+    background:transparent;border:1px solid #6B6F5E;color:var(--paper);
+    font-family:var(--sans);font-size:12px;padding:7px 14px;border-radius:3px;cursor:pointer;
+  }
+  .summary-reset:hover{border-color:var(--brass);color:var(--brass);}
+
+  /* ---------- layout ---------- */
+  .layout{
+    max-width:1180px;margin:0 auto;
+    display:grid;grid-template-columns:250px 1fr;gap:0;
+    min-height:calc(100vh - 160px);
+  }
+  nav.categories{
+    border-right:1px solid var(--line);
+    padding:26px 18px 40px 0;
+  }
+  .cat-btn{
+    display:block;width:100%;text-align:left;
+    background:none;border:none;cursor:pointer;
+    padding:11px 14px;margin-bottom:2px;
+    border-radius:3px;
+    font-family:var(--sans);
+    color:var(--ink-soft);
+  }
+  .cat-btn .cat-name{font-size:14.5px;display:block;}
+  .cat-btn .cat-figs{
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);
+    display:flex;justify-content:space-between;margin-top:3px;
+  }
+  .cat-btn.active{background:var(--panel-2);color:var(--ink);}
+  .cat-btn.active .cat-name{font-weight:600;}
+  .cat-btn:hover:not(.active){background:var(--panel);}
+  .cat-btn .delta{font-family:var(--mono);}
+  .cat-btn .delta.neg{color:var(--rust);}
+  .cat-btn .delta.zero{color:var(--ink-faint);}
+
+  nav.categories .about-link{
+    display:block;margin-top:22px;padding:11px 14px;font-size:12.5px;color:var(--ink-faint);
+    border-top:1px solid var(--line-soft);padding-top:16px;
+  }
+
+  main{padding:26px 28px 60px 28px;}
+  .cat-intro{margin-bottom:20px;}
+  .cat-intro h2{
+    font-family:var(--serif);font-weight:400;font-size:24px;margin:0 0 6px;
+  }
+  .cat-intro p{margin:0;color:var(--ink-soft);font-size:13.5px;max-width:640px;}
+
+  /* ---------- ledger rows ---------- */
+  .ledger{border-top:1px solid var(--ink);}
+  .row{
+    border-bottom:1px solid var(--line);
+    padding:12px 4px;
+  }
+  .row-main{
+    display:flex;align-items:center;gap:12px;cursor:pointer;
+  }
+  .row-main:hover{background:var(--panel);}
+  .chk{
+    width:18px;height:18px;flex:none;border:1.5px solid var(--ink-soft);border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--panel);
+  }
+  .chk.on{background:var(--forest);border-color:var(--forest);}
+  .chk.on::after{content:'✓';color:var(--paper);font-size:12px;line-height:1;}
+  .chk.off{background:var(--rust-bg);border-color:var(--rust);}
+  .chk.off::after{content:'×';color:var(--rust);font-size:14px;line-height:1;font-weight:700;}
+  .row-code{
+    font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+    width:38px;flex:none;
+  }
+  .row-name{flex:1;font-size:14px;}
+  .row-name .off-tag{color:var(--rust);font-size:11px;margin-left:8px;}
+  .row-amount{
+    font-family:var(--mono);font-size:14px;width:110px;text-align:right;flex:none;
+  }
+  .row-amount.off{color:var(--rust);text-decoration:line-through;text-decoration-color:var(--rust);}
+  .expander{
+    width:20px;flex:none;text-align:center;color:var(--ink-faint);font-size:11px;
+    transition:transform .15s ease;
+  }
+  .expander.open{transform:rotate(90deg);}
+  .no-sub{width:20px;flex:none;}
+
+  .subrows{
+    margin:6px 0 2px 68px;
+    border-left:2px solid var(--line-soft);
+    padding-left:14px;
+    display:none;
+  }
+  .subrows.open{display:block;}
+  .subrow{
+    display:flex;align-items:center;gap:10px;padding:6px 4px;cursor:pointer;
+  }
+  .subrow:hover{background:var(--panel);}
+  .subrow .chk{width:15px;height:15px;}
+  .subrow .chk.on::after{font-size:10px;}
+  .subrow .chk.off::after{font-size:11px;}
+  .subrow-name{flex:1;font-size:13px;color:var(--ink-soft);}
+  .subrow-amount{font-family:var(--mono);font-size:12.5px;width:95px;text-align:right;flex:none;}
+  .subrow-amount.off{color:var(--rust);text-decoration:line-through;}
+
+  .residual-note{
+    font-size:12px;color:var(--ink-faint);font-style:italic;padding:6px 4px 2px 68px;
+  }
+
+  .group-header{
+    font-family:var(--serif);font-size:15px;margin:26px 0 4px;color:var(--ink);
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--ink);padding-bottom:4px;
+  }
+  .group-header .g-total{font-family:var(--mono);font-size:12.5px;color:var(--ink-faint);}
+  .group-header:first-child{margin-top:0;}
+  .group-blurb{
+    font-size:12.5px;color:var(--ink-soft);font-style:italic;
+    margin:2px 0 8px;padding:0 4px;
+  }
+
+  /* ---------- about panel ---------- */
+  .about-panel{
+    max-width:640px;font-size:13px;color:var(--ink-soft);line-height:1.65;
+  }
+  .about-panel h2{font-family:var(--serif);font-weight:400;font-size:22px;color:var(--ink);}
+  .about-panel h3{font-family:var(--serif);font-weight:400;font-size:16px;color:var(--ink);margin-top:22px;}
+  .about-panel code{font-family:var(--mono);font-size:12px;background:var(--panel);padding:1px 4px;border-radius:2px;}
+
+  .toolbar{
+    display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;
+  }
+  .toolbar button{
+    font-family:var(--sans);font-size:12.5px;padding:9px 16px;border-radius:3px;
+    border:1px solid var(--ink);background:var(--panel);cursor:pointer;color:var(--ink);
+  }
+  .toolbar button:hover{background:var(--panel-2);}
+  .toolbar button.primary{background:var(--ink);color:var(--paper);}
+  .toolbar button.primary:hover{background:#2E3327;}
+
+  #summary-output{
+    margin-top:16px;white-space:pre-wrap;font-family:var(--mono);font-size:12px;
+    background:var(--panel);border:1px solid var(--line);padding:14px;border-radius:4px;
+    display:none;max-height:340px;overflow:auto;
+  }
+
+  @media(max-width:820px){
+    .layout{grid-template-columns:1fr;}
+    nav.categories{border-right:none;border-bottom:1px solid var(--line);padding:18px 0;}
+    .cat-btn{display:inline-block;width:auto;margin-right:6px;}
+    .row-code{display:none;}
+    .row-amount{width:88px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div>
+      <h1>Haushaltsspiel 2026</h1>
+      <p>Der Bundeshaushalt 2026 (524,5 Mrd. €) zum Durchklicken — nach 13 Themen sortiert, von Politischer Führung über Renten bis Verkehr.</p>
+    </div>
+    <div class="masthead-meta">
+      Bundeshaushaltsplan 2026, Soll<br>
+      Quelle: amtliche Funktionenübersicht, Bundeshaushaltsplan 2026<br>
+      Struktureller Neuverschuldungsspielraum: 40,4 Mrd. €
+    </div>
+  </div>
+</div>
+
+<div class="summary-bar">
+  <div class="summary-inner">
+    <div class="summary-figure">
+      <span class="label">Im Spiel abgebildetes Volumen (Soll 2026)</span>
+      <span class="value" id="sumBaseline">— Mrd. €</span>
+    </div>
+    <div class="summary-figure">
+      <span class="label">Nach deinen Kürzungen</span>
+      <span class="value" id="sumCurrent">— Mrd. €</span>
+    </div>
+    <div class="summary-figure">
+      <span class="label">Eingespart</span>
+      <span class="value pos" id="sumSaved">0 Mio. €</span>
+    </div>
+    <div class="summary-gauge">
+      <div class="label"><span>Anteil an strukturellem Neuverschuldungsspielraum (40,4 Mrd. €) eingespart</span><span id="gaugePct">0%</span></div>
+      <div class="gauge-track"><div class="gauge-fill" id="gaugeFill"></div></div>
+    </div>
+    <button class="summary-reset" id="resetBtn">Zurücksetzen</button>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="categories" id="catNav"></nav>
+  <main id="mainArea"></main>
+</div>
+
+<script>
+/* =========================================================================
+   DATA
+   All figures in EUR million, Soll (budgeted) 2026.
+   Source: official Funktionenübersicht (Teil II) of the Bundeshaushaltsplan —
+   the complete functional breakdown down to 3-digit Aufgabenbereich codes,
+   cross-checked line by line against the published 2026 total of 524,540
+   million EUR. No gaps, no double-counted lines.
+   ========================================================================= */
+
+const DATA = {
+  "politik": {
+    "label": "Politische Führung & Verwaltung",
+    "intro": "Regierung, Parlament und die zentrale Verwaltungsmaschinerie des Bundes.",
+    "groups": [
+      {
+        "name": "Politische Führung",
+        "total": 9201,
+        "items": [
+          {
+            "code": "0101",
+            "name": "Bundespräsident (Amtsausgaben)",
+            "amount": 4.8
+          },
+          {
+            "code": "0111",
+            "name": "Bundespräsidialamt, zentral veranschlagt (v. a. Versorgung)",
+            "amount": 10.55
+          },
+          {
+            "code": "0112",
+            "name": "Bundespräsidialamt (Verwaltung)",
+            "amount": 40.38
+          },
+          {
+            "code": "0113",
+            "name": "Büro der Gemeinsamen Wissenschaftskonferenz",
+            "amount": 3.21
+          },
+          {
+            "code": "0211",
+            "name": "Bundestag, zentral veranschlagt (v. a. Versorgung)",
+            "amount": 84
+          },
+          {
+            "code": "0212",
+            "name": "Deutscher Bundestag (Parlamentsbetrieb)",
+            "amount": 1128.6
+          },
+          {
+            "code": "0213",
+            "name": "Der Wehrbeauftragte des Bundestages",
+            "amount": 5.41
+          },
+          {
+            "code": "0214",
+            "name": "Bundesversammlung",
+            "amount": 0
+          },
+          {
+            "code": "0215",
+            "name": "Mitglieder des Europäischen Parlaments (deutsche Kostenanteile)",
+            "amount": 8.54
+          },
+          {
+            "code": "0216",
+            "name": "Parlamentarische Kontrolle der Nachrichtendienste",
+            "amount": 3.92
+          },
+          {
+            "code": "0217",
+            "name": "Bundesbeauftragte für die Opfer der SED-Diktatur",
+            "amount": 1.32
+          },
+          {
+            "code": "0218",
+            "name": "Polizeibeauftragter des Bundes beim Bundestag",
+            "amount": 2.36
+          },
+          {
+            "code": "0311",
+            "name": "Bundesrat, zentral veranschlagt (v. a. Versorgung)",
+            "amount": 7.77
+          },
+          {
+            "code": "0312",
+            "name": "Bundesrat (Kammerbetrieb)",
+            "amount": 30.76
+          },
+          {
+            "code": "0635",
+            "name": "Bundeszentrale für politische Bildung",
+            "amount": 105.23
+          }
+        ],
+        "residual": 7764.15,
+        "blurb": "Bundestag, Bundesrat, Bundeskanzleramt, Bundespräsidialamt und die zentrale Regierungsführung.",
+        "note": "Bundespräsident/-amt, Bundestag, Bundesrat und die Bundeszentrale für politische Bildung (Soll 2025) sind einzeln aufgeschlüsselt; Bundeskanzleramt und der Großteil des BMI (Heimat, Integration/Migration, IT- und Netzpolitik) fehlen noch."
+      },
+      {
+        "name": "Innere Verwaltung",
+        "total": 799,
+        "items": [
+          {
+            "code": "0615",
+            "name": "Bundesverwaltungsamt",
+            "amount": 619.54
+          }
+        ],
+        "residual": 179.46,
+        "blurb": "Zentrale Verwaltungsausgaben, die keinem einzelnen Ressort zugeordnet sind."
+      },
+      {
+        "name": "Informationswesen",
+        "total": 69,
+        "items": [
+          {
+            "code": "2411",
+            "name": "BMDS - Zentral veranschlagte Verwaltungseinnahmen und -ausgaben",
+            "amount": 1.708
+          },
+          {
+            "code": "2412",
+            "name": "Bundesministerium für Digitales und Staatsmodernisierung (Ministerium)",
+            "amount": 9.483
+          }
+        ],
+        "residual": 57.809,
+        "blurb": "Statistische und informationstechnische Grundlagenarbeit des Bundes.",
+        "note": "Soll 2025 (Rechnung über den Haushalt) für das neu zugeschnittene Bundesministerium für Digitales und Staatsmodernisierung (Epl. 24, damals im Aufbau; 11,19 Mio. € reine Ministeriumsausgaben - die großen IT-/Digitalisierungsprogramme laufen über andere Titel und Ressorts und stecken bereits in deren Funktionslinien."
+      },
+      {
+        "name": "Statistischer Dienst",
+        "total": 345,
+        "items": [
+          {
+            "code": "0614",
+            "name": "Statistisches Bundesamt",
+            "amount": 232.6
+          }
+        ],
+        "residual": 112.4,
+        "blurb": "Das Statistische Bundesamt und die amtliche Statistik."
+      },
+      {
+        "name": "Hochbauverwaltung",
+        "total": 281,
+        "items": [
+          {
+            "code": "6004",
+            "name": "Bundesimmobilienangelegenheiten (Kap. 6004, Allgemeine Finanzverwaltung)",
+            "amount": 35.484
+          }
+        ],
+        "residual": 245.516,
+        "blurb": "Bundesbauverwaltung für bundeseigene Gebäude.",
+        "note": "Soll 2025 (Rechnung über den Haushalt, Epl. 60). Die BImA selbst wirtschaftet größtenteils kostendeckend über Mieteinnahmen, daher ist der Nettoausgabenposten klein."
+      },
+      {
+        "name": "Sonstige allgemeine Staatsaufgaben",
+        "total": 2315,
+        "items": [
+          {
+            "code": "2011",
+            "name": "Bundesrechnungshof - Zentral veranschlagte Verwaltungseinnahmen und -ausgaben",
+            "amount": 72.943
+          },
+          {
+            "code": "2012",
+            "name": "Bundesrechnungshof (Behörde)",
+            "amount": 123.027
+          },
+          {
+            "code": "2111",
+            "name": "Bundesbeauftragte für Datenschutz - Zentral veranschlagte Verwaltung",
+            "amount": 9.258
+          },
+          {
+            "code": "2112",
+            "name": "Die Bundesbeauftragte für den Datenschutz und die Informationsfreiheit",
+            "amount": 38.144
+          },
+          {
+            "code": "2211",
+            "name": "Unabhängiger Kontrollrat - Zentral veranschlagte Verwaltung",
+            "amount": 0.668
+          },
+          {
+            "code": "2212",
+            "name": "Unabhängiger Kontrollrat (Aufsicht über Nachrichtendienste)",
+            "amount": 10.978
+          }
+        ],
+        "residual": 2059.982,
+        "blurb": "Sammelposten für allgemeine Staatsaufgaben ohne eigene Funktion.",
+        "note": "Enthält je Soll 2025 (Rechnung über den Haushalt): Bundesrechnungshof (Epl. 20, 195,97 Mio. €), Bundesbeauftragte für Datenschutz und Informationsfreiheit (Epl. 21, 47,40 Mio. €) und Unabhängiger Kontrollrat, die Aufsichtsinstanz über die Nachrichtendienste (Epl. 22, 11,65 Mio. €)."
+      },
+      {
+        "name": "Steuer- und Zollverwaltung",
+        "total": 6153,
+        "items": [
+          {
+            "code": "0813",
+            "name": "Zollverwaltung",
+            "amount": 3580.91
+          },
+          {
+            "code": "0815",
+            "name": "Bundeszentralamt für Steuern",
+            "amount": 894.54
+          }
+        ],
+        "residual": 1677.55,
+        "blurb": "Finanzämter des Bundes und der Zoll.",
+        "note": "Zoll- und Bundessteuerverwaltung erfasst (Soll 2025). Der übrige BMF-Haushalt gehört größtenteils zu anderen Funktionen (Finanzen, Vermögen & Schulden) und ist dort noch nicht einzeln aufgeschlüsselt."
+      },
+      {
+        "name": "Schulden-, Vermögens- und sonstige Finanzverwaltung",
+        "total": 54,
+        "items": [],
+        "residual": 54,
+        "blurb": "Verwaltung von Bundesvermögen und -schulden."
+      }
+    ]
+  },
+  "auswaertiges": {
+    "label": "Auswärtiges & Verteidigung",
+    "intro": "Diplomatie, Entwicklungszusammenarbeit und die Bundeswehr.",
+    "groups": [
+      {
+        "name": "Auswärtige Angelegenheiten",
+        "total": 15351,
+        "items": [
+          {
+            "code": "021",
+            "name": "Auslandsvertretungen (nur Bund)",
+            "amount": 1127
+          },
+          {
+            "code": "022",
+            "name": "Internationale Organisationen",
+            "amount": 1211
+          },
+          {
+            "code": "023",
+            "name": "Wirtschaftliche Zusammenarbeit und Entwicklung",
+            "amount": 9881
+          },
+          {
+            "code": "024",
+            "name": "Auslandsschulwesen und kulturelle Angelegenheiten im Ausland",
+            "amount": 933
+          },
+          {
+            "code": "029",
+            "name": "Sonstige auswärtige Angelegenheiten",
+            "amount": 2198
+          }
+        ],
+        "residual": 1,
+        "blurb": "Auslandsvertretungen, internationale Organisationen und Entwicklungszusammenarbeit.",
+        "note": "Der Unterposten \"Wirtschaftliche Zusammenarbeit und Entwicklung\" (9.881 Mio. €, 2026) entspricht im Kern dem Bundesministerium für wirtschaftliche Zusammenarbeit und Entwicklung (BMZ, Epl. 23). Dessen reale Kapitel für Soll 2025 (10.307 Mio. € insgesamt): Bilaterale staatliche Entwicklungszusammenarbeit (4.796 Mio. €), Zivilgesellschaftliches/kommunales/wirtschaftliches Engagement (1.310 Mio. €), Europäische Entwicklungszusammenarbeit/Vereinte Nationen (1.962 Mio. €), Beiträge an multilaterale Entwicklungsbanken (985 Mio. €), Forschung/Evaluierung (55 Mio. €), sonstige Bewilligungen (1.018 Mio. €), Verwaltung (14 Mio. €) und Ministerium (166 Mio. €)."
+      },
+      {
+        "name": "Bundeswehrverwaltung",
+        "total": 9039,
+        "items": [
+          {
+            "code": "1412",
+            "name": "Bundesministerium der Verteidigung",
+            "amount": 323.22
+          },
+          {
+            "code": "1413",
+            "name": "Bundeswehrverwaltung, Universitäten der Bundeswehr, Militärseelsorge",
+            "amount": 7930.2
+          }
+        ],
+        "residual": 785.58,
+        "blurb": "Ziviler Verwaltungsapparat der Bundeswehr (nicht die Streitkräfte selbst).",
+        "note": "Rechnung über den Haushalt 2025 (Ist/Soll-Vergleich, „Prototyp Rechnungslegung” — Soll-Werte verwendet)"
+      },
+      {
+        "name": "Deutsche Verteidigungsstreitkräfte",
+        "total": 74891,
+        "items": [
+          {
+            "code": "1401",
+            "name": "Verpflichtungen NATO und internationale Einsätze",
+            "amount": 1519.42
+          },
+          {
+            "code": "1403",
+            "name": "Kommandobehörden und Truppen, Versorgung der Soldatinnen und Soldaten",
+            "amount": 19997.15
+          },
+          {
+            "code": "1405",
+            "name": "Militärische Beschaffungen",
+            "amount": 8776.2
+          },
+          {
+            "code": "1406",
+            "name": "Materialerhaltung der Bundeswehr",
+            "amount": 6795.24
+          },
+          {
+            "code": "1407",
+            "name": "Sonstiger Betrieb der Bundeswehr",
+            "amount": 9789.52
+          },
+          {
+            "code": "1408",
+            "name": "Unterbringung",
+            "amount": 410
+          }
+        ],
+        "residual": 27603.47,
+        "blurb": "Der Kern des Verteidigungsetats: Personal, Ausrüstung und Betrieb der Bundeswehr.",
+        "note": "Rechnung über den Haushalt 2025 (Ist/Soll-Vergleich, „Prototyp Rechnungslegung” — Soll-Werte verwendet). Die größten Betriebs- und Beschaffungstitel sind erfasst; „Sonstige Bewilligungen” (rund 1,9 Mrd. €) lässt sich ohne tiefere Titeldaten nicht sicher zuordnen und fehlt noch."
+      },
+      {
+        "name": "Wehrforschung und wehrtechnische Entwicklung",
+        "total": 1603,
+        "items": [
+          {
+            "code": "1404",
+            "name": "Wehrforschung, Entwicklung und Erprobung",
+            "amount": 1188.07
+          }
+        ],
+        "residual": 414.93,
+        "blurb": "Forschung und Entwicklung für militärische Ausrüstung.",
+        "note": "Rechnung über den Haushalt 2025 (Ist/Soll-Vergleich, „Prototyp Rechnungslegung” — Soll-Werte verwendet)"
+      },
+      {
+        "name": "Unterhaltssicherung (Bundeswehr)",
+        "total": 251,
+        "items": [],
+        "residual": 251,
+        "blurb": "Unterhaltsleistungen für Angehörige von Wehrdienstleistenden."
+      },
+      {
+        "name": "Verteidigungslasten (ausländische Streitkräfte)",
+        "total": 19,
+        "items": [],
+        "residual": 19,
+        "blurb": "Kosten durch den Aufenthalt verbündeter ausländischer Streitkräfte in Deutschland."
+      }
+    ]
+  },
+  "sicherheit": {
+    "label": "Sicherheit & Recht",
+    "intro": "Polizei, Katastrophenschutz, Verfassungsschutz und die Bundesgerichte.",
+    "groups": [
+      {
+        "name": "Öffentliche Sicherheit und Ordnung",
+        "total": 9938,
+        "items": [
+          {
+            "code": "043",
+            "name": "Öffentliche Ordnung",
+            "amount": 510
+          },
+          {
+            "code": "046",
+            "name": "Wetterdienst",
+            "amount": 393
+          },
+          {
+            "code": "0624",
+            "name": "Bundeskriminalamt",
+            "amount": 1042.79
+          },
+          {
+            "code": "0625",
+            "name": "Bundespolizei",
+            "amount": 4940.74
+          },
+          {
+            "code": "0626",
+            "name": "Bundesamt für Verfassungsschutz",
+            "amount": 576.99
+          },
+          {
+            "code": "0628",
+            "name": "Bundesamt für Bevölkerungsschutz und Katastrophenhilfe",
+            "amount": 335.86
+          },
+          {
+            "code": "0629",
+            "name": "Bundesanstalt Technisches Hilfswerk (THW)",
+            "amount": 446.39
+          }
+        ],
+        "residual": 1692.23,
+        "blurb": "Bundespolizei, Katastrophenschutz, Wetterdienst und Verfassungsschutz.",
+        "note": "Polizei, Verfassungsschutz und Katastrophenschutz sind jetzt mit den realen Bundesbehörden aufgeschlüsselt (Soll 2025) statt als grobe Funktions-Sammelzeilen."
+      },
+      {
+        "name": "Rechtsschutz",
+        "total": 889,
+        "items": [
+          {
+            "code": "059",
+            "name": "Sonstige Rechtsschutzaufgaben",
+            "amount": 564
+          },
+          {
+            "code": "0713",
+            "name": "Bundesgerichtshof",
+            "amount": 69.19
+          },
+          {
+            "code": "0714",
+            "name": "Der Generalbundesanwalt beim Bundesgerichtshof",
+            "amount": 80.9
+          },
+          {
+            "code": "0715",
+            "name": "Bundesverwaltungsgericht",
+            "amount": 29.24
+          },
+          {
+            "code": "0716",
+            "name": "Bundesfinanzhof",
+            "amount": 22.21
+          },
+          {
+            "code": "0717",
+            "name": "Bundespatentgericht",
+            "amount": 16.92
+          },
+          {
+            "code": "1114",
+            "name": "Bundesarbeitsgericht",
+            "amount": 21.25
+          },
+          {
+            "code": "1115",
+            "name": "Bundessozialgericht",
+            "amount": 25.34
+          },
+          {
+            "code": "1911",
+            "name": "Bundesverfassungsgericht, zentral veranschlagt (v. a. Versorgung)",
+            "amount": 32.6
+          },
+          {
+            "code": "1912",
+            "name": "Bundesverfassungsgericht",
+            "amount": 12.23
+          }
+        ],
+        "residual": 15.12,
+        "blurb": "Bundesgerichte, Staatsanwaltschaften und sonstige Rechtsschutzaufgaben.",
+        "note": "Sieben Bundesgerichte einzeln erfasst (Soll 2025, ersetzt die vorherige Sammelzeile „Gerichte und Staatsanwaltschaften”). Das Bundesjustizministerium selbst (Ministerium, Bundesamt für Justiz, Patent- und Markenamt, Verbraucherschutz) fehlt noch."
+      }
+    ]
+  },
+  "bildung": {
+    "label": "Bildung, Wissenschaft & Kultur",
+    "intro": "Hochschulen, außeruniversitäre Forschung, BAföG und Kulturförderung.",
+    "groups": [
+      {
+        "name": "Bildungswesen, Wissenschaft, Forschung, kulturelle Angelegenheiten",
+        "total": 30156,
+        "items": [
+          {
+            "code": "114",
+            "name": "Öffentliche weiterführende allgemeinbildende Schulen (ohne Sonder­ schulen/Förderschulen)",
+            "amount": 26
+          },
+          {
+            "code": "129",
+            "name": "Sonstige schulische Aufgaben",
+            "amount": 87
+          },
+          {
+            "code": "13",
+            "name": "Hochschulen",
+            "amount": 5491
+          },
+          {
+            "code": "14",
+            "name": "Förderung für Schülerinnen und Schüler, Studierende, Weiterbildungsteilnehmende",
+            "amount": 4723
+          },
+          {
+            "code": "15",
+            "name": "Sonstiges Bildungswesen",
+            "amount": 554
+          },
+          {
+            "code": "16",
+            "name": "Wissenschaft, Forschung, Entwicklung außerhalb der Hochschulen",
+            "amount": 17300
+          },
+          {
+            "code": "18-19",
+            "name": "Kultur und Religion",
+            "amount": 1975
+          }
+        ],
+        "residual": 0,
+        "note": "Gesamte Funktion Bildung/Wissenschaft/Forschung/Kultur; einige Unterpunkte (z. B. 137 Deutsche Forschungsgemeinschaft, 165 Forschung) stecken in den gezeigten Sammelposten. Der Löwenanteil der Unterposten \"Hochschulen\", \"Förderung für Studierende\" (BAföG) und \"Wissenschaft, Forschung, Entwicklung\" entfällt auf das Bundesministerium für Forschung, Technologie und Raumfahrt (BMFTR, Epl. 30, seit 2025 inkl. der früheren Bildungsressortsaufgaben). Reale Kapitel, Soll 2025: Leistungsfähigkeit des Bildungswesens/Nachwuchsförderung (5.999 Mio. €), Wettbewerbsfähigkeit von Wissenschaft und Innovation (8.110 Mio. €), Forschung für Innovationen/Zukunftsstrategie (8.160 Mio. €), sonstige Bewilligungen (399 Mio. €), Ministerium (174 Mio. €) - Summe 22.364 Mio. €. Weitere Beiträge zu dieser Funktion kommen u. a. von anderen Ressorts mit eigenen Forschungstiteln.",
+        "blurb": "Hochschulen, außeruniversitäre Forschung, BAföG, Kultur- und Religionsförderung — als ein Block."
+      }
+    ]
+  },
+  "renten": {
+    "label": "Renten & Versorgung",
+    "intro": "Gesetzliche Rente und Beamtenpensionen — zusammen der größte Ausgabenblock im Haushalt.",
+    "groups": [
+      {
+        "name": "Allgemeine Rentenversicherung (nur Bundesträger)",
+        "total": 119023,
+        "items": [],
+        "residual": 119023,
+        "blurb": "Der Bundeszuschuss zur gesetzlichen Rentenversicherung — mit Abstand der größte Einzelposten im ganzen Haushalt."
+      },
+      {
+        "name": "Knappschaftliche Rentenversicherung (nur Bundesträger)",
+        "total": 4798,
+        "items": [],
+        "residual": 4798,
+        "blurb": "Rentenkasse für den Bergbau, seit Jahrzehnten stark bundesbezuschusst."
+      },
+      {
+        "name": "Alterssicherung der Landwirte (nur Bund)",
+        "total": 2425,
+        "items": [
+          {
+            "code": "636 01",
+            "name": "Zuschuss zur Alterssicherung der Landwirte (BMEL, Titel 636 01)",
+            "amount": 2390
+          }
+        ],
+        "residual": 35,
+        "blurb": "Eigenständige Alterssicherung für Landwirtinnen und Landwirte, fast vollständig bundesfinanziert."
+      },
+      {
+        "name": "Versorgung allgemeine Verwaltung (Beamtenpensionen)",
+        "total": 12993,
+        "items": [
+          {
+            "code": "6067",
+            "name": "Sonstige Versorgungsausgaben (Kap. 6067, Allgemeine Finanzverwaltung)",
+            "amount": 2629.92
+          }
+        ],
+        "residual": 10363.08,
+        "blurb": "Pensionen für Bundesbeamtinnen und -beamte in der allgemeinen Verwaltung.",
+        "note": "Ergänzende, ressortübergreifende Versorgungsausgaben (Soll 2025, Epl. 60), zusätzlich zu den bei den einzelnen Ressorts veranschlagten Pensionen."
+      },
+      {
+        "name": "Versorgung Bundeswehrverwaltung, zivil",
+        "total": 1329,
+        "items": [],
+        "residual": 1329,
+        "blurb": "Pensionen für das zivile Personal der Bundeswehrverwaltung."
+      },
+      {
+        "name": "Versorgung Soldatinnen und Soldaten der Bundeswehr",
+        "total": 6326,
+        "items": [],
+        "residual": 6326,
+        "blurb": "Pensionen für ehemalige Berufssoldatinnen und -soldaten."
+      },
+      {
+        "name": "Versorgung Finanzverwaltung",
+        "total": 1295,
+        "items": [],
+        "residual": 1295,
+        "blurb": "Pensionen für Beamtinnen und Beamte der Steuer- und Zollverwaltung."
+      }
+    ]
+  },
+  "gesundheit": {
+    "label": "Gesundheit & Pflege",
+    "intro": "Kranken- und Pflegeversicherung sowie öffentlicher Gesundheitsschutz.",
+    "groups": [
+      {
+        "name": "Krankenversicherung",
+        "total": 18388,
+        "items": [
+          {
+            "code": "1501",
+            "name": "Bundeszuschuss zur gesetzlichen Krankenversicherung (BMG)",
+            "amount": 16800
+          }
+        ],
+        "residual": 1588,
+        "blurb": "Bundeszuschuss zur gesetzlichen Krankenversicherung, u. a. zum Ausgleich versicherungsfremder Leistungen.",
+        "note": "Rechnung über den Haushalt 2025 (Ist/Soll-Vergleich, „Prototyp Rechnungslegung” — Soll-Werte verwendet) Der übrige BMG-Haushalt (Pflegevorsorge, Prävention, Forschung, nachgeordnete Behörden — zusammen rund 2,3 Mrd. €) gehört zu anderen Funktionen und ist hier noch nicht erfasst."
+      },
+      {
+        "name": "Pflegeversicherung",
+        "total": 3200,
+        "items": [],
+        "residual": 3200,
+        "blurb": "Bundeszuschuss zur sozialen Pflegeversicherung."
+      },
+      {
+        "name": "Gesundheitswesen",
+        "total": 1804,
+        "items": [
+          {
+            "code": "312",
+            "name": "Krankenhäuser und Heilstätten",
+            "amount": 190
+          },
+          {
+            "code": "313",
+            "name": "Arbeitsschutz",
+            "amount": 106
+          },
+          {
+            "code": "314",
+            "name": "Gesundheitsschutz",
+            "amount": 1509
+          }
+        ],
+        "residual": -1,
+        "blurb": "Öffentlicher Gesundheitsschutz: Krankenhausförderung, Arbeitsschutz, Seuchen- und Gesundheitsvorsorge."
+      },
+      {
+        "name": "Sonstige Sozialversicherungen",
+        "total": 6710,
+        "items": [
+          {
+            "code": "636 04",
+            "name": "Zuschuss zur Krankenversicherung der Landwirte (BMEL, Titel 636 04)",
+            "amount": 1540
+          }
+        ],
+        "residual": 5170,
+        "note": "Enthält laut BMEL-Haushaltstitel 636 04 exakt 1,54 Mrd. € Zuschuss zur landwirtschaftlichen Krankenversicherung; der Rest sind weitere kleinere Sozialversicherungszweige, noch nicht einzeln aufgeschlüsselt.",
+        "blurb": "Kleinere Sozialversicherungszweige, u. a. die landwirtschaftliche Krankenversicherung."
+      },
+      {
+        "name": "Unfallversicherung",
+        "total": 300,
+        "items": [
+          {
+            "code": "636 02",
+            "name": "Zuschuss zur landwirtschaftlichen Unfallversicherung (BMEL, Titel 636 02)",
+            "amount": 120
+          }
+        ],
+        "residual": 180,
+        "blurb": "Bundeszuschuss zur gesetzlichen Unfallversicherung.",
+        "note": "Die allgemeine (nicht-landwirtschaftliche) Unfallversicherung des Bundes läuft über einen separaten BMAS-Titel, der hier noch nicht erfasst ist."
+      }
+    ]
+  },
+  "soziales": {
+    "label": "Familie, Arbeit & Soziales",
+    "intro": "Bürgergeld, Kindergeld, Elterngeld und weitere soziale Sicherung außerhalb von Rente und Gesundheit.",
+    "groups": [
+      {
+        "name": "Verwaltung für soziale Angelegenheiten",
+        "total": 3180,
+        "items": [],
+        "residual": 3180,
+        "blurb": "Verwaltungskosten der Sozialbehörden."
+      },
+      {
+        "name": "Arbeitslosenversicherung (Bundeszuschuss)",
+        "total": 3971,
+        "items": [],
+        "residual": 3971,
+        "blurb": "Bundeszuschuss zur Arbeitslosenversicherung (Beitragsfinanzierung deckt den Rest)."
+      },
+      {
+        "name": "Familienhilfe, Wohlfahrtspflege u. Ä. (ohne Leistungen nach dem SGB VIII)",
+        "total": 12780,
+        "items": [
+          {
+            "code": "231",
+            "name": "Kindergeld, Kinderzuschlag",
+            "amount": 3602
+          },
+          {
+            "code": "232",
+            "name": "Elterngeld, Erziehungsgeld und Mutterschutz",
+            "amount": 7512
+          },
+          {
+            "code": "235",
+            "name": "Soziale Einrichtungen",
+            "amount": 238
+          },
+          {
+            "code": "236",
+            "name": "Förderung der Wohlfahrtspflege",
+            "amount": 117
+          },
+          {
+            "code": "237",
+            "name": "Leistungen nach dem Unterhaltsvorschussgesetz",
+            "amount": 1310
+          }
+        ],
+        "residual": 1,
+        "note": "Wohngeld (233) ist separat unter Wohnen & Miete zu finden; diese Zeile zeigt 23 ohne 233.",
+        "blurb": "Kindergeld, Elterngeld, Unterhaltsvorschuss und Wohlfahrtspflege (Wohngeld separat unter Wohnen)."
+      },
+      {
+        "name": "Leistungen nach dem Sozialen Entschädigungsrecht",
+        "total": 2394,
+        "items": [
+          {
+            "code": "241",
+            "name": "Leistungen der Sozialen Entschädigung",
+            "amount": 421
+          },
+          {
+            "code": "243",
+            "name": "Lastenausgleich",
+            "amount": 3
+          },
+          {
+            "code": "244",
+            "name": "Wiedergutmachung",
+            "amount": 286
+          },
+          {
+            "code": "246",
+            "name": "Vertriebene und Spätaussiedlerinnen und Spätaussiedler",
+            "amount": 29
+          },
+          {
+            "code": "249",
+            "name": "Sonstige Leistungen für Folgen von Krieg und politischen Ereignissen",
+            "amount": 1654
+          }
+        ],
+        "residual": 1,
+        "blurb": "Entschädigungsleistungen für Kriegsopfer, Vertriebene und ähnliche Gruppen."
+      },
+      {
+        "name": "Arbeitsmarktpolitik",
+        "total": 51478,
+        "items": [
+          {
+            "code": "251",
+            "name": "Arbeitslosengeld II nach dem SGB II",
+            "amount": 28050
+          },
+          {
+            "code": "252",
+            "name": "Leistungen für Unterkunft und Heizung nach dem SGB II",
+            "amount": 13000
+          },
+          {
+            "code": "253",
+            "name": "Aktive Arbeitsmarktpolitik",
+            "amount": 5178
+          },
+          {
+            "code": "259",
+            "name": "Sonstige Leistungen der Grundsicherung für Arbeitsuchende nach dem SGB II",
+            "amount": 5250
+          }
+        ],
+        "residual": 0,
+        "blurb": "Bürgergeld, Unterkunftskosten für Erwerbslose und aktive Arbeitsmarktförderung — einer der größten Sozialposten."
+      },
+      {
+        "name": "Kinder- und Jugendhilfe nach dem SGB VIII",
+        "total": 399,
+        "items": [
+          {
+            "code": "261",
+            "name": "Jugendarbeit und Jugendverbandsarbeit",
+            "amount": 343
+          },
+          {
+            "code": "265",
+            "name": "Hilfen zur Erziehung und Eingliederungshilfen",
+            "amount": 56
+          }
+        ],
+        "residual": 0,
+        "blurb": "Jugendarbeit, Jugendverbände und Erziehungshilfen."
+      },
+      {
+        "name": "Soziale Leistungen SGB XII / Asylbewerberleistungsgesetz",
+        "total": 12480,
+        "items": [
+          {
+            "code": "281",
+            "name": "Hilfe zum Lebensunterhalt nach dem SGB XII",
+            "amount": 30
+          },
+          {
+            "code": "282",
+            "name": "Grundsicherung im Alter und bei Erwerbsminderung nach dem SGB XII",
+            "amount": 12450
+          },
+          {
+            "code": "287",
+            "name": "Leistungen nach dem Asylbewerberleistungsgesetz",
+            "amount": 0
+          }
+        ],
+        "residual": 0,
+        "blurb": "Grundsicherung im Alter und bei Erwerbsminderung sowie Sozialhilfe."
+      },
+      {
+        "name": "Sonstige soziale Angelegenheiten",
+        "total": 1141,
+        "items": [],
+        "residual": 1141,
+        "blurb": "Übrige soziale Leistungen ohne eigene Funktion."
+      },
+      {
+        "name": "Sport und Erholung",
+        "total": 350,
+        "items": [
+          {
+            "code": "322",
+            "name": "Sport",
+            "amount": 350
+          }
+        ],
+        "residual": 0,
+        "blurb": "Spitzensportförderung und Sportinfrastruktur des Bundes."
+      }
+    ]
+  },
+  "wohnen": {
+    "label": "Wohnen & Städtebau",
+    "intro": "Wohngeld, sozialer Wohnungsbau und Städtebauförderung.",
+    "groups": [
+      {
+        "name": "Wohngeld",
+        "total": 2425,
+        "items": [],
+        "residual": 2425,
+        "blurb": "Zuschuss des Bundes zu den Wohnkosten einkommensschwacher Haushalte, die nicht in Grundsicherung sind."
+      },
+      {
+        "name": "Wohnungswesen, Wohnungsbauprämie",
+        "total": 3831,
+        "items": [
+          {
+            "code": "411",
+            "name": "Förderung des Wohnungsbaues",
+            "amount": 3507
+          },
+          {
+            "code": "412",
+            "name": "Wohnungsbauprämie/Vermögensbildung (nur Bund)",
+            "amount": 220
+          },
+          {
+            "code": "419",
+            "name": "Sonstiges Wohnungswesen",
+            "amount": 104
+          }
+        ],
+        "residual": 0,
+        "blurb": "Sozialer Wohnungsbau, Neubauförderung und die Wohnungsbauprämie fürs Bausparen.",
+        "note": "Zuständiges Ressort: Bundesministerium für Wohnen, Stadtentwicklung und Bauwesen (BMWSB, Epl. 25). Reale Kapitel, Soll 2025: Bau- und Wohnungswesen (5.738 Mio. €), Stadtentwicklung und Raumordnung (1.260 Mio. €), Hochbau-/Förderungsmaßnahmen Berlin/Bonn (119 Mio. €), Ministerium (99 Mio. €), Bundesamt für Bauwesen und Raumordnung (151 Mio. €) - Summe 7.370 Mio. €, die sich (anders als bei den übrigen Ressorts) nicht überschneidungsfrei auf die einzelnen Funktionszeilen dieser Kategorie aufteilen lässt, ohne die Titel-Ebene auszuwerten."
+      },
+      {
+        "name": "Geoinformation, Raumordnung und Landesplanung, Städte­ bauförderung",
+        "total": 808,
+        "items": [
+          {
+            "code": "422",
+            "name": "Raumordnung und Landesplanung",
+            "amount": 7
+          },
+          {
+            "code": "423",
+            "name": "Städtebauförderung",
+            "amount": 801
+          }
+        ],
+        "residual": 0,
+        "blurb": "Städtebauförderung, Quartiersentwicklung und Raumplanung.",
+        "note": "Zuständiges Ressort: Bundesministerium für Wohnen, Stadtentwicklung und Bauwesen (BMWSB, Epl. 25). Reale Kapitel, Soll 2025: Bau- und Wohnungswesen (5.738 Mio. €), Stadtentwicklung und Raumordnung (1.260 Mio. €), Hochbau-/Förderungsmaßnahmen Berlin/Bonn (119 Mio. €), Ministerium (99 Mio. €), Bundesamt für Bauwesen und Raumordnung (151 Mio. €) - Summe 7.370 Mio. €, die sich (anders als bei den übrigen Ressorts) nicht überschneidungsfrei auf die einzelnen Funktionszeilen dieser Kategorie aufteilen lässt, ohne die Titel-Ebene auszuwerten."
+      },
+      {
+        "name": "Kommunale Gemeinschaftsdienste",
+        "total": 0,
+        "items": [],
+        "residual": 0,
+        "blurb": "Kommunale Infrastruktur außerhalb von Straßenbeleuchtung, Abwasser und Müll (hier: keine eigenen Bundesausgaben)."
+      }
+    ]
+  },
+  "landwirtschaft": {
+    "label": "Landwirtschaft & Ländlicher Raum",
+    "intro": "Agrarförderung, Forst- und Fischereiwirtschaft, regionale Strukturförderung.",
+    "groups": [
+      {
+        "name": "Verwaltung für Ernährung, Landwirtschaft und Forsten (ohne Betriebsverwaltung)",
+        "total": 30,
+        "items": [
+          {
+            "code": "511",
+            "name": "Verwaltung für Ernährung und Landwirtschaft",
+            "amount": 30
+          }
+        ],
+        "residual": 0,
+        "blurb": "Verwaltungskosten der Agrar- und Ernährungspolitik."
+      },
+      {
+        "name": "Landwirtschaft und Ernährung",
+        "total": 1640,
+        "items": [
+          {
+            "code": "521",
+            "name": "Agrarstruktur und ländlicher Raum",
+            "amount": 750
+          },
+          {
+            "code": "522",
+            "name": "Einkommenstabilisierende Maßnahmen",
+            "amount": 247
+          },
+          {
+            "code": "523",
+            "name": "Landwirtschaftliche Produktion, Tiergesundheit und Ernährung",
+            "amount": 643
+          }
+        ],
+        "residual": 0,
+        "blurb": "Agrarstrukturförderung (GAK), Einkommensstützung für Betriebe, Ökolandbau- und Ernährungsprogramme."
+      },
+      {
+        "name": "Forstwirtschaft und Jagd, Fischerei",
+        "total": 22,
+        "items": [
+          {
+            "code": "532",
+            "name": "Fischerei",
+            "amount": 22
+          }
+        ],
+        "residual": 0,
+        "blurb": "Förderung von Forstwirtschaft und Fischerei."
+      },
+      {
+        "name": "Regionale Förderungsmaßnahmen",
+        "total": 2333,
+        "items": [
+          {
+            "code": "691",
+            "name": "Betriebliche Investitionen",
+            "amount": 728
+          },
+          {
+            "code": "692",
+            "name": "Verbesserung der Wirtschafts- und Infrastruktur",
+            "amount": 1605
+          }
+        ],
+        "residual": 0,
+        "note": "Amtlich Teil der Funktion 6 (Energie/Gewerbe), hier wegen des klaren Regional-/Ländlicher-Raum-Bezugs eingeordnet.",
+        "blurb": "Wirtschaftsförderung für strukturschwache Regionen, meist ländlich geprägt (u. a. GRW)."
+      }
+    ]
+  },
+  "wirtschaft": {
+    "label": "Wirtschaft & Energie",
+    "intro": "Energiewende, Gewerbeförderung, Bergbau und die Aufsicht über Handel und Finanzwesen.",
+    "groups": [
+      {
+        "name": "Verwaltung für Energie- und Wasserwirtschaft, Gewerbe und Dienstleistungen",
+        "total": 187,
+        "items": [],
+        "residual": 187,
+        "blurb": "Verwaltungskosten der Behörden, die Energie-, Wasser- und Gewerbepolitik umsetzen."
+      },
+      {
+        "name": "Wasserwirtschaft, Hochwasser- und Küstenschutz",
+        "total": 170,
+        "items": [
+          {
+            "code": "623",
+            "name": "Wasserwirtschaft und Kulturbau",
+            "amount": 50
+          },
+          {
+            "code": "625",
+            "name": "Küstenschutz",
+            "amount": 120
+          }
+        ],
+        "residual": 0,
+        "blurb": "Deiche, Hochwasserschutz und Küstenschutzbauten."
+      },
+      {
+        "name": "Bergbau, verarbeitendes Gewerbe und Baugewerbe",
+        "total": 738,
+        "items": [
+          {
+            "code": "631",
+            "name": "Kohlenbergbau",
+            "amount": 256
+          },
+          {
+            "code": "632",
+            "name": "Sonstiger Bergbau",
+            "amount": 141
+          },
+          {
+            "code": "634",
+            "name": "Verarbeitende Industrie",
+            "amount": 341
+          }
+        ],
+        "residual": 0,
+        "blurb": "Förderprogramme für Bergbau, Industrie und Bauwirtschaft, inkl. Kohleausstiegshilfen."
+      },
+      {
+        "name": "Energie- und Wasserversorgung, Entsorgung",
+        "total": 16674,
+        "items": [
+          {
+            "code": "641",
+            "name": "Kernenergie",
+            "amount": 25
+          },
+          {
+            "code": "642",
+            "name": "Erneuerbare Energieformen",
+            "amount": 48
+          },
+          {
+            "code": "643",
+            "name": "Elektrizitätsversorgung",
+            "amount": 16421
+          },
+          {
+            "code": "649",
+            "name": "Sonstige Energie- und Wasserversorgung",
+            "amount": 179
+          }
+        ],
+        "residual": 1,
+        "blurb": "Der mit Abstand größte Wirtschaftsposten: Förderung erneuerbarer Energien, Netzausbau, Strompreis-Entlastungen."
+      },
+      {
+        "name": "Handel und Tourismus",
+        "total": 169,
+        "items": [
+          {
+            "code": "651",
+            "name": "Handel",
+            "amount": 128
+          },
+          {
+            "code": "652",
+            "name": "Tourismus",
+            "amount": 41
+          }
+        ],
+        "residual": 0,
+        "blurb": "Förderprogramme für Einzelhandel und Tourismusbranche."
+      },
+      {
+        "name": "Geld- und Versicherungswesen",
+        "total": 271,
+        "items": [
+          {
+            "code": "661",
+            "name": "Banken und Kreditinstitute",
+            "amount": 261
+          },
+          {
+            "code": "669",
+            "name": "Sonstiges Geld- und Versicherungswesen",
+            "amount": 10
+          }
+        ],
+        "residual": 0,
+        "blurb": "Aufsicht und Förderprogramme rund um Banken und Versicherungen."
+      },
+      {
+        "name": "Sonstiges im Bereich Gewerbe und Dienstleistungen",
+        "total": 4750,
+        "items": [
+          {
+            "code": "3208",
+            "name": "Bürgschaften, Garantien und sonstige Gewährleistungen des Bundes (Kap. 3208, Epl. 32 Bundesschuld)",
+            "amount": 3930
+          }
+        ],
+        "residual": 820,
+        "blurb": "Sammelposten für Wirtschaftsförderung außerhalb der einzeln genannten Branchen.",
+        "note": "Exportkredit- und sonstige Bundesbürgschaften (Hermesdeckungen u. Ä.), Soll 2025."
+      }
+    ]
+  },
+  "verkehr": {
+    "label": "Verkehr & Infrastruktur",
+    "intro": "Straßen, Schiene, Wasserstraßen, Luftfahrt und Telekommunikation.",
+    "groups": [
+      {
+        "name": "Verwaltung des Verkehrs- und Nachrichtenwesens",
+        "total": 1661,
+        "items": [
+          {
+            "code": "711",
+            "name": "Verwaltung für Straßen- und Brückenbau",
+            "amount": 0
+          },
+          {
+            "code": "712",
+            "name": "Verwaltung für Wasserstraßen und Häfen",
+            "amount": 908
+          },
+          {
+            "code": "719",
+            "name": "Sonstige Verkehrs- und Nachrichtenverwaltung",
+            "amount": 753
+          }
+        ],
+        "residual": 0,
+        "blurb": "Verwaltungskosten der Verkehrsbehörden (Straßen-, Wasserstraßen-, Bahnaufsicht)."
+      },
+      {
+        "name": "Straßen",
+        "total": 7695,
+        "items": [
+          {
+            "code": "721",
+            "name": "Bundesautobahnen",
+            "amount": 4283
+          },
+          {
+            "code": "722",
+            "name": "Bundesstraßen",
+            "amount": 3198
+          },
+          {
+            "code": "723",
+            "name": "Landesstraßen",
+            "amount": 15
+          },
+          {
+            "code": "725",
+            "name": "Gemeindestraßen",
+            "amount": 151
+          },
+          {
+            "code": "729",
+            "name": "Sonstiger Straßenverkehr",
+            "amount": 48
+          }
+        ],
+        "residual": 0,
+        "blurb": "Bau und Erhalt von Autobahnen und Bundesstraßen."
+      },
+      {
+        "name": "Wasserstraßen und Häfen, Förderung der Schifffahrt",
+        "total": 2291,
+        "items": [
+          {
+            "code": "731",
+            "name": "Wasserstraßen und Häfen",
+            "amount": 2182
+          },
+          {
+            "code": "732",
+            "name": "Förderung der Schifffahrt",
+            "amount": 109
+          }
+        ],
+        "residual": 0,
+        "blurb": "Kanäle, Häfen und Schifffahrtsförderung."
+      },
+      {
+        "name": "Eisenbahnen und öffentlicher Personennahverkehr",
+        "total": 5477,
+        "items": [
+          {
+            "code": "741",
+            "name": "Öffentlicher Personennahverkehr",
+            "amount": 2036
+          },
+          {
+            "code": "742",
+            "name": "Eisenbahnen",
+            "amount": 3441
+          }
+        ],
+        "residual": 0,
+        "blurb": "Bahninfrastruktur und Zuschüsse für Busse und Bahnen vor Ort."
+      },
+      {
+        "name": "Luftfahrt",
+        "total": 572,
+        "items": [],
+        "residual": 572,
+        "blurb": "Flugsicherung und Luftverkehrsförderung."
+      },
+      {
+        "name": "Nachrichtenwesen",
+        "total": 467,
+        "items": [
+          {
+            "code": "771",
+            "name": "Post und Telekommunikation",
+            "amount": 47
+          },
+          {
+            "code": "772",
+            "name": "Rundfunk und Fernsehen",
+            "amount": 420
+          }
+        ],
+        "residual": 0,
+        "blurb": "Post, Telekommunikation und Rundfunkförderung."
+      },
+      {
+        "name": "Sonstiges Verkehrswesen",
+        "total": 3240,
+        "items": [],
+        "residual": 3240,
+        "blurb": "Übrige Verkehrsausgaben, nicht auf Straße, Schiene, Wasser oder Luft aufgeteilt."
+      }
+    ]
+  },
+  "umwelt": {
+    "label": "Umwelt & nukleare Sicherheit",
+    "intro": "Naturschutz und die Aufsicht über nukleare Sicherheit.",
+    "groups": [
+      {
+        "name": "Umwelt- und Naturschutz",
+        "total": 764,
+        "items": [
+          {
+            "code": "1601",
+            "name": "Umweltschutz",
+            "amount": 263.16
+          },
+          {
+            "code": "1613",
+            "name": "Umweltbundesamt",
+            "amount": 205.19
+          },
+          {
+            "code": "1614",
+            "name": "Bundesamt für Naturschutz",
+            "amount": 60.92
+          }
+        ],
+        "residual": 234.73,
+        "blurb": "Naturschutzprojekte, Umweltverwaltung und -forschung.",
+        "note": "Rechnung über den Haushalt 2025 (Ist/Soll-Vergleich, „Prototyp Rechnungslegung” — Soll-Werte verwendet). Ersetzt die vorherige grobe Funktions-Aufschlüsselung durch die realen BMUV-Kapitel."
+      },
+      {
+        "name": "Nukleare Sicherheit und Strahlenschutz",
+        "total": 2186,
+        "items": [
+          {
+            "code": "341",
+            "name": "Verwaltung für nukleare Sicherheit und Strahlenschutz",
+            "amount": 141
+          },
+          {
+            "code": "1603",
+            "name": "Zwischenlagerung und Endlagerung radioaktiver Abfälle",
+            "amount": 1400.36
+          },
+          {
+            "code": "1605",
+            "name": "Nukleare Sicherheit und Strahlenschutz (BMUV-Kapitel)",
+            "amount": 131.35
+          }
+        ],
+        "residual": 513.29,
+        "blurb": "Atomaufsicht, Strahlenschutz und die Endlagersuche.",
+        "note": "Rechnung über den Haushalt 2025 (Ist/Soll-Vergleich, „Prototyp Rechnungslegung” — Soll-Werte verwendet). Ersetzt die vorherige Sammelzeile „Maßnahmen” durch die realen BMUV-Kapitel."
+      }
+    ]
+  },
+  "finanzen": {
+    "label": "Finanzen, Vermögen & Schulden",
+    "intro": "Bundesvermögen, Sondervermögen, Zinsen auf die Bundesschuld und pauschale Minderausgaben. Das mit Abstand größte Kapitel des Einzelplans 60 (Allgemeine Finanzverwaltung), \"Allgemeine Bewilligungen\" (Kap. 6002, Soll 2025: 43,9 Mrd. €), bündelt u. a. Zuführungen an die Sondervermögen (Klima- und Transformationsfonds, Sondervermögen Infrastruktur und Klimaneutralität u. a.) sowie Globalzuschüsse - dieses Geld steckt bereits einzeln in den jeweiligen Funktionslinien (z. B. Umwelt, Verkehr, Rentenversicherung) und wird hier nicht zusätzlich gezählt, um Doppelzählung zu vermeiden. Die klima- und transformationsbezogenen Sondervermögen selbst (KTF, WSF/Infrastrukturfonds; zusammen über 70 Mrd. € Ist-Ausgaben 2025) sind rechtlich eigene Nebenhaushalte außerhalb des Kernhaushalts und daher nicht Teil der 524,5-Mrd.-€-Gesamtsumme dieses Spiels.",
+    "groups": [
+      {
+        "name": "Grund- und Kapitalvermögen, Sondervermögen",
+        "total": 10180,
+        "items": [
+          {
+            "code": "811",
+            "name": "Grundvermögen",
+            "amount": 0
+          },
+          {
+            "code": "812",
+            "name": "Kapitalvermögen",
+            "amount": 0
+          },
+          {
+            "code": "813",
+            "name": "Sondervermögen",
+            "amount": 10180
+          }
+        ],
+        "residual": 0,
+        "blurb": "Verwaltung von Bundesimmobilien und Zuführungen an Sondervermögen wie den Klima- und Transformationsfonds."
+      },
+      {
+        "name": "Steuern und Finanzzuweisungen",
+        "total": 438,
+        "items": [],
+        "residual": 438,
+        "blurb": "Technischer Ausgabenposten rund um Steuerverwaltung und Finanzausgleich (die Steuereinnahmen selbst stehen auf der Einnahmenseite)."
+      },
+      {
+        "name": "Schulden (Zinsausgaben u. Tilgung)",
+        "total": 30226,
+        "items": [
+          {
+            "code": "3205",
+            "name": "Verzinsung der Bundesschuld (Kap. 3205)",
+            "amount": 30241.97
+          }
+        ],
+        "residual": -15.97,
+        "blurb": "Zinsen auf die bestehende Bundesschuld — praktisch nicht kurzfristig kürzbar.",
+        "note": "Soll 2025 (Rechnung über den Haushalt, Epl. 32) für die Zinsausgaben; geringfügig höher als der reservierte Funktions-Ansatz 2026 (30.226 Mio. €), da Zinssätze und Schuldenstand von Jahr zu Jahr schwanken."
+      },
+      {
+        "name": "Beihilfen, Unterstützungen u. Ä.",
+        "total": 1009,
+        "items": [],
+        "residual": 1009,
+        "blurb": "Beihilfen für Beamtinnen und Beamte außerhalb der Ressort-Einzelpläne."
+      },
+      {
+        "name": "Sonstiges (Finanzwirtschaft)",
+        "total": 443,
+        "items": [],
+        "residual": 443,
+        "blurb": "Sammelposten der allgemeinen Finanzwirtschaft ohne eigene Funktion."
+      },
+      {
+        "name": "Globalposten (globale Minderausgaben)",
+        "total": -4272,
+        "items": [],
+        "residual": -4272,
+        "blurb": "Eine geplante pauschale Kürzung quer über den Haushalt — daher negativ; keine echte Ausgabe, sondern ein Sparziel."
+      }
+    ]
+  }
+};
+
+const CATEGORY_ORDER = ["politik","auswaertiges","sicherheit","bildung","renten","gesundheit","soziales","wohnen","landwirtschaft","wirtschaft","verkehr","umwelt","finanzen"];
+const DEBT_BRAKE_LIMIT = 40392; // Mio €, zulässige strukturelle Nettokreditaufnahme 2026
+const REAL_TOTAL = 524540; // Mio €, offizielle Gesamtausgaben des Bundeshaushalts 2026 (zum Vergleich, nicht 1:1 auf die Spiel-Posten aufgeteilt)
+
+/* ---------- state: build a flat, checkable model from DATA ---------- */
+let uid = 0;
+function assignIds(){
+  CATEGORY_ORDER.forEach(catKey=>{
+    DATA[catKey].groups.forEach(g=>{
+      g._id = 'g'+(uid++);
+      g._on = true;
+      g.items.forEach(it=>{ it._id = 'i'+(uid++); it._on = true; });
+    });
+  });
+}
+assignIds();
+
+let activeCat = CATEGORY_ORDER[0];
+let expanded = {};
+
+/* ---------- helpers ---------- */
+function fmt(n){
+  return Math.round(n).toLocaleString('de-DE');
+}
+function fmtBn(mio){
+  return (mio/1000).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' Mrd. €';
+}
+
+function groupCurrentTotal(g){
+  // if items exist, sum item amounts (only those on) + residual (always counted, non-toggleable unless group itself off)
+  if(!g._on) return 0;
+  if(g.items.length===0){
+    return g.residual;
+  }
+  let sum = g.residual;
+  g.items.forEach(it=>{ if(it._on) sum += it.amount; });
+  return sum;
+}
+function groupBaselineTotal(g){ return g.total; }
+
+function catTotals(catKey){
+  let baseline=0, current=0;
+  DATA[catKey].groups.forEach(g=>{
+    baseline += groupBaselineTotal(g);
+    current += groupCurrentTotal(g);
+  });
+  return {baseline, current};
+}
+function grandTotals(){
+  let baseline=0, current=0;
+  CATEGORY_ORDER.forEach(k=>{
+    const t = catTotals(k);
+    baseline += t.baseline; current += t.current;
+  });
+  return {baseline, current};
+}
+
+/* ---------- rendering ---------- */
+function renderNav(){
+  const nav = document.getElementById('catNav');
+  nav.innerHTML = '';
+  CATEGORY_ORDER.forEach(key=>{
+    const cat = DATA[key];
+    const t = catTotals(key);
+    const saved = t.baseline - t.current;
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (key===activeCat ? ' active' : '');
+    btn.innerHTML = `
+      <span class="cat-name">${cat.label}</span>
+      <span class="cat-figs">
+        <span>${fmtBn(t.current)}</span>
+        <span class="delta ${saved>0.5?'neg':'zero'}">${saved>0.5 ? '−'+fmt(saved)+' Mio.' : ''}</span>
+      </span>`;
+    btn.onclick = ()=>{ activeCat = key; renderAll(); };
+    nav.appendChild(btn);
+  });
+  const about = document.createElement('button');
+  about.className = 'cat-btn about-link';
+  about.style.cursor='pointer';
+  about.innerHTML = 'Über dieses Spiel &amp; Methodik →';
+  about.onclick = ()=>{ activeCat = '__about__'; renderAll(); };
+  nav.appendChild(about);
+}
+
+function renderMain(){
+  const main = document.getElementById('mainArea');
+  main.innerHTML = '';
+
+  if(activeCat === '__about__'){
+    main.innerHTML = `
+      <div class="about-panel">
+        <h2>Über dieses Spiel</h2>
+        <p>Dies ist der Bundeshaushalt 2026 (524,5 Mrd. € Gesamtausgaben, vom Bundestag am 28. November 2025 beschlossen), aufbereitet nach <strong>Aufgabenbereichen (Funktionen)</strong> — der Gliederung, die zeigt, wofür Geld ausgegeben wird, unabhängig davon, welches Ministerium es verwaltet. Fünf Themen stehen vorn: Wirtschaft, Wohnen &amp; Miete, Renten, Gesundheit und ländlicher Raum.</p>
+        <h3>Wie die Zahlen entstanden sind</h3>
+        <p>Alle Zahlen stammen aus der amtlichen <strong>Funktionenübersicht</strong> des Bundeshaushaltsplans (Teil II, „Gliederung der Einnahmen und Ausgaben nach Funktionen/Aufgabenbereichen") — vollständig und bis auf die dreistellige Ebene, nicht nur in Auszügen. Jede der 156 Zeilen in diesem Spiel ist ein einzelner Aufgabenbereich mit eigenem, amtlichem Betrag; alle Zeilen zusammen summieren sich exakt auf die 524,54 Mrd. € Gesamtausgaben 2026 — kein Posten fehlt, keiner ist doppelt gezählt.</p>
+        <h3>Die Spielmechanik</h3>
+        <p>Jede Zeile lässt sich an- und abwählen (Häkchen = behalten, Kreuz = streichen). Zeilen mit einem Pfeil lassen sich aufklappen und einzeln in Unterposten verändern. Oben siehst du die laufende Summe und wie viel du im Vergleich zum <strong>strukturellen Neuverschuldungsspielraum</strong> (40,4 Mrd. €, die nach Schuldenbremse zulässige Nettokreditaufnahme 2026) einsparst — das ist die eigentliche Zwangsjacke der deutschen Haushaltspolitik, nicht ein beliebiges rundes Ziel.</p>
+        <h3>Grenzen</h3>
+        <p>Aufgabenbereiche (Funktionen) sind eine Ebene gröber als einzelne Haushaltstitel — die tatsächliche, kleinteiligste Gliederung, in der z. B. ein einzelnes Förderprogramm eine eigene Zeile hätte. Davon gibt es im gesamten Bundeshaushalt mehrere Tausend, verteilt auf 24 separate Einzelplan-Dokumente; die hier gezeigte Funktionsebene ist der genaueste Stand, den ich vollständig und ohne Lücken oder Doppelzählung belegen kann. Außerdem sind Streichungen hier Ausgabenkürzungen, keine vollständige Haushaltssimulation — Einnahmeeffekte, Multiplikatoreffekte auf Wachstum und rechtliche Bindungen (z. B. Rechtsansprüche auf Rente oder Bürgergeld) werden nicht modelliert.</p>
+        <p id="coverageNote"></p>
+        <div class="toolbar">
+          <button class="primary" onclick="window._backToPlay()">Zurück zum Spiel</button>
+        </div>
+      </div>`;
+    document.querySelector('.about-panel .toolbar button.primary').onclick = ()=>{ activeCat = CATEGORY_ORDER[0]; renderAll(); };
+    const t = grandTotals();
+    document.getElementById('coverageNote').textContent =
+      `Konkret: ${fmt(t.baseline)} Mio. € über alle Zeilen — das entspricht (bis auf Rundung) exakt den amtlichen Gesamtausgaben 2026 von 524 540 Mio. €.`;
+    return;
+  }
+
+  const cat = DATA[activeCat];
+  const intro = document.createElement('div');
+  intro.className = 'cat-intro';
+  intro.innerHTML = `<h2>${cat.label}</h2><p>${cat.intro}</p>`;
+  main.appendChild(intro);
+
+  const ledger = document.createElement('div');
+  ledger.className = 'ledger';
+
+  cat.groups.forEach(g=>{
+    const gh = document.createElement('div');
+    gh.className = 'group-header';
+    gh.innerHTML = `<span>${g.name}</span><span class="g-total">Soll 2026: ${fmt(g.total)} Mio. €</span>`;
+    ledger.appendChild(gh);
+
+    if(g.blurb){
+      const bl = document.createElement('div');
+      bl.className = 'group-blurb';
+      bl.textContent = g.blurb;
+      ledger.appendChild(bl);
+    }
+
+    const row = document.createElement('div');
+    row.className = 'row';
+
+    const rowMain = document.createElement('div');
+    rowMain.className = 'row-main';
+
+    const hasSub = g.items.length > 0;
+    const isOpen = !!expanded[g._id];
+
+    const currentVal = groupCurrentTotal(g);
+
+    rowMain.innerHTML = `
+      <span class="chk ${g._on?'on':'off'}" data-toggle-group="${g._id}"></span>
+      <span class="row-code"></span>
+      <span class="row-name">${hasSub ? '(gesamter Posten — oder einzeln unten aufklappen)' : 'Gesamter Posten'}${!g._on?' <span class="off-tag">gestrichen</span>':''}</span>
+      <span class="row-amount ${!g._on?'off':''}">${fmt(currentVal)} Mio. €</span>
+      ${hasSub ? `<span class="expander ${isOpen?'open':''}" data-expand="${g._id}">▶</span>` : `<span class="no-sub"></span>`}
+    `;
+    row.appendChild(rowMain);
+
+    if(hasSub){
+      const sub = document.createElement('div');
+      sub.className = 'subrows' + (isOpen ? ' open':'');
+      sub.id = 'sub-'+g._id;
+      g.items.forEach(it=>{
+        const sr = document.createElement('div');
+        sr.className = 'subrow';
+        sr.innerHTML = `
+          <span class="chk ${it._on?'on':'off'}" data-toggle-item="${it._id}"></span>
+          <span class="subrow-name">${it.name}${!it._on?' <span class="off-tag">gestrichen</span>':''}</span>
+          <span class="subrow-amount ${!it._on?'off':''}">${fmt(it.amount)} Mio. €</span>
+        `;
+        sub.appendChild(sr);
+      });
+      if(g.residual > 0){
+        const rn = document.createElement('div');
+        rn.style.cssText = 'font-size:12px;color:var(--ink-faint);font-style:italic;padding:6px 4px;';
+        rn.textContent = `+ ${fmt(g.residual)} Mio. € übrige, nicht einzeln aufgeschlüsselte Titel (immer enthalten, solange der Posten insgesamt aktiv ist)`;
+        sub.appendChild(rn);
+      }
+      row.appendChild(sub);
+    }
+
+    if(g.note){
+      const note = document.createElement('div');
+      note.className = 'residual-note';
+      note.textContent = g.note;
+      row.appendChild(note);
+    }
+
+    ledger.appendChild(row);
+  });
+
+  main.appendChild(ledger);
+
+  // toolbar at bottom of every category page
+  const toolbar = document.createElement('div');
+  toolbar.className = 'toolbar';
+  toolbar.innerHTML = `
+    <button id="copySummaryBtn">Zusammenfassung deiner Änderungen kopieren</button>
+  `;
+  main.appendChild(toolbar);
+  const out = document.createElement('div');
+  out.id = 'summary-output';
+  main.appendChild(out);
+
+  document.getElementById('copySummaryBtn').onclick = showSummary;
+
+  // wire up toggles
+  main.querySelectorAll('[data-toggle-group]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const id = el.getAttribute('data-toggle-group');
+      const g = findGroup(id);
+      g._on = !g._on;
+      renderAll();
+    };
+  });
+  main.querySelectorAll('[data-toggle-item]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const id = el.getAttribute('data-toggle-item');
+      const it = findItem(id);
+      it._on = !it._on;
+      renderAll();
+    };
+  });
+  main.querySelectorAll('[data-expand]').forEach(el=>{
+    el.onclick = (e)=>{
+      e.stopPropagation();
+      const id = el.getAttribute('data-expand');
+      expanded[id] = !expanded[id];
+      renderAll();
+    };
+  });
+  // clicking row body (not on checkbox) toggles expand if it has sub, else toggles group
+  main.querySelectorAll('.row-main').forEach(rm=>{
+    rm.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-toggle-group]') || e.target.closest('[data-expand]')) return;
+      const expEl = rm.querySelector('[data-expand]');
+      if(expEl){ expEl.click(); }
+    });
+  });
+}
+
+function findGroup(id){
+  for(const k of CATEGORY_ORDER){
+    for(const g of DATA[k].groups){ if(g._id===id) return g; }
+  }
+}
+function findItem(id){
+  for(const k of CATEGORY_ORDER){
+    for(const g of DATA[k].groups){
+      for(const it of g.items){ if(it._id===id) return it; }
+    }
+  }
+}
+
+function renderSummaryBar(){
+  const t = grandTotals();
+  const saved = t.baseline - t.current;
+  // t.baseline is the sum of every modeled item's official Soll-2026 figure — it is the
+  // total this game actually lets you play with, not a forced match to the full 524,54 Mrd. €
+  // (some smaller, hard-to-source Aufgabenbereiche aren't itemized here — see "Über dieses Spiel").
+  document.getElementById('sumBaseline').textContent = fmtBn(t.baseline);
+  document.getElementById('sumCurrent').textContent = fmtBn(t.current);
+  const savedEl = document.getElementById('sumSaved');
+  savedEl.textContent = (saved>0.5?'−':'') + fmt(saved) + ' Mio. €';
+  savedEl.className = 'value ' + (saved>0.5 ? 'pos' : '');
+
+  const pct = Math.max(0, Math.min(100, (saved / DEBT_BRAKE_LIMIT) * 100));
+  document.getElementById('gaugeFill').style.width = pct.toFixed(1)+'%';
+  document.getElementById('gaugePct').textContent = pct.toFixed(1)+'%';
+}
+
+function showSummary(){
+  const out = document.getElementById('summary-output');
+  let lines = [];
+  lines.push('MEINE HAUSHALTSPRIORITÄTEN — Bundeshaushalt 2026');
+  lines.push('='.repeat(50));
+  let anyChange = false;
+  CATEGORY_ORDER.forEach(k=>{
+    const cat = DATA[k];
+    let catLines = [];
+    cat.groups.forEach(g=>{
+      if(!g._on){
+        catLines.push(`  GESTRICHEN: ${g.name} (−${fmt(g.total)} Mio. €)`);
+        anyChange = true;
+      } else {
+        g.items.forEach(it=>{
+          if(!it._on){
+            catLines.push(`  gestrichen: ${it.name} (−${fmt(it.amount)} Mio. €)`);
+            anyChange = true;
+          }
+        });
+      }
+    });
+    if(catLines.length){
+      lines.push('');
+      lines.push(cat.label+':');
+      lines.push(...catLines);
+    }
+  });
+  if(!anyChange){ lines.push('', '(Noch keine Änderungen vorgenommen.)'); }
+  const t = grandTotals();
+  const saved = t.baseline - t.current;
+  lines.push('');
+  lines.push('-'.repeat(50));
+  lines.push(`Gesamt eingespart: ${fmt(saved)} Mio. €`);
+  lines.push(`Das sind ${((saved/DEBT_BRAKE_LIMIT)*100).toFixed(1)}% des strukturellen Neuverschuldungsspielraums 2026 (40,4 Mrd. €).`);
+  const text = lines.join('\n');
+  out.textContent = text;
+  out.style.display = 'block';
+  if(navigator.clipboard){ navigator.clipboard.writeText(text).catch(()=>{}); }
+}
+
+function renderAll(){
+  renderNav();
+  renderMain();
+  renderSummaryBar();
+}
+
+document.getElementById('resetBtn').onclick = ()=>{
+  CATEGORY_ORDER.forEach(k=>{
+    DATA[k].groups.forEach(g=>{
+      g._on = true;
+      g.items.forEach(it=>{ it._on = true; });
+    });
+  });
+  expanded = {};
+  renderAll();
+};
+
+window._backToPlay = ()=>{ activeCat = CATEGORY_ORDER[0]; renderAll(); };
+
+renderAll();
+</script>
+</body>
+</html>
